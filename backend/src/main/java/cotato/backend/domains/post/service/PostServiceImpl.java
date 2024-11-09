@@ -1,4 +1,4 @@
-package cotato.backend.domains.post;
+package cotato.backend.domains.post.service;
 
 import static cotato.backend.common.exception.ErrorCode.*;
 
@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cotato.backend.common.excel.ExcelUtils;
 import cotato.backend.common.exception.ApiException;
+import cotato.backend.domains.post.entity.Post;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional
-public class PostService {
+public class PostServiceImpl implements PostService {
 
 	// 로컬 파일 경로로부터 엑셀 파일을 읽어 Post 엔터티로 변환하고 저장
 	public void saveEstatesByExcel(String filePath) {
