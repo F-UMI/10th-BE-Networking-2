@@ -1,4 +1,4 @@
-package cotato.backend.domains.repository;
+package cotato.backend.domains.post.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
