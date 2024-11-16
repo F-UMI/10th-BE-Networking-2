@@ -7,15 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RequiredArgsConstructor
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,8 +28,13 @@ public class Post {
 
 	@NonNull
 	private String name;
-
 	@ColumnDefault("0")
 	private int views;
 
+	@Builder
+	public Post(@NonNull String title, @NonNull String content, @NonNull String name) {
+		this.title = title;
+		this.content = content;
+		this.name = name;
+	}
 }
