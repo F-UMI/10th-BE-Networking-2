@@ -32,12 +32,16 @@ public class Post {
 	@ColumnDefault("0")
 	private int views;
 
+	@ColumnDefault("0")
+	private int likes;
+
 	@Builder
-	public Post(@NonNull String title, @NonNull String content, @NonNull String name, int views) {
+	public Post(@NonNull String title, @NonNull String content, @NonNull String name, int views, int likes) {
 		this.title = title;
 		this.content = content;
 		this.name = name;
 		this.views = views;
+		this.likes = likes;
 	}
 
 	public void increaseViews() {
