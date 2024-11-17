@@ -13,6 +13,7 @@ import cotato.backend.common.exception.ApiException;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
+import cotato.backend.domains.post.repository.PostJdbcRepository;
 import cotato.backend.domains.post.repository.PostRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepository;
+	private final PostJdbcRepository postJdbcRepository;
 
 	// 로컬 파일 경로로부터 엑셀 파일을 읽어 Post 엔터티로 변환하고 저장
 	public void saveEstatesByExcel(SavePostsByExcelRequest request) {
@@ -35,11 +37,10 @@ public class PostServiceImpl implements PostService {
 					String title = row.get("title");
 					String content = row.get("content");
 					String name = row.get("name");
-
 					return new Post(title, content, name);
 				})
-				.collect(Collectors.toList());
-
+				.toList();
+			postJdbcRepository.saveAllPost(posts);
 		} catch (Exception e) {
 			log.error("Failed to save estates by excel", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
