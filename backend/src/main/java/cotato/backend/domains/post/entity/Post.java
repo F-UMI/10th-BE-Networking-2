@@ -17,7 +17,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NonNull
