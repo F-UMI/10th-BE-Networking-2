@@ -4,6 +4,8 @@ import static cotato.backend.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,7 @@ public class PostServiceImpl implements PostService {
 					String title = row.get("title");
 					String content = row.get("content");
 					String name = row.get("name");
-					return new Post(title, content, name, 0);
+					return new Post(title, content, name, 0, 0);
 				})
 				.toList();
 			postJdbcRepository.saveAllPost(posts);
@@ -72,5 +74,11 @@ public class PostServiceImpl implements PostService {
 			log.error("Failed to find post by id", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@Override
+	public Page<PostDto> findPostsSortedByLikes(Pageable pageable) {
+		Page<Post> posts = postRepository.findAll(pageable);
+		return posts.map(PostDto::from);
 	}
 }

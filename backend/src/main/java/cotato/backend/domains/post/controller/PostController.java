@@ -1,5 +1,8 @@
 package cotato.backend.domains.post.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cotato.backend.common.dto.DataResponse;
+import cotato.backend.common.dto.PageResponse;
 import cotato.backend.domains.post.dto.PostDto;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
@@ -37,5 +41,11 @@ public class PostController {
 	@GetMapping("/read")
 	public ResponseEntity<DataResponse<PostDto>> getPostById(@RequestParam Long id) {
 		return ResponseEntity.ok(DataResponse.from(postService.findPostById(id)));
+	}
+
+	@GetMapping("/popular")
+	public ResponseEntity<PageResponse<PostDto>> getPopularPosts(
+		@PageableDefault(sort = "likes", direction = Sort.Direction.DESC) Pageable pageable) {
+		return ResponseEntity.ok(PageResponse.from(postService.findPostsSortedByLikes(pageable)));
 	}
 }
