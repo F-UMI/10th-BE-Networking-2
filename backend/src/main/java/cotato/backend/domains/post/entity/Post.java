@@ -28,13 +28,19 @@ public class Post {
 
 	@NonNull
 	private String name;
+
 	@ColumnDefault("0")
 	private int views;
 
 	@Builder
-	public Post(@NonNull String title, @NonNull String content, @NonNull String name) {
+	public Post(@NonNull String title, @NonNull String content, @NonNull String name, int views) {
 		this.title = title;
 		this.content = content;
 		this.name = name;
+		this.views = views;
+	}
+
+	public void increaseViews() {
+		this.views++;
 	}
 }

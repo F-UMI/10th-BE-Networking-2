@@ -3,13 +3,13 @@ package cotato.backend.domains.post.service;
 import static cotato.backend.common.exception.ErrorCode.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cotato.backend.common.excel.ExcelUtils;
 import cotato.backend.common.exception.ApiException;
+import cotato.backend.domains.post.dto.PostDto;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
@@ -28,6 +28,7 @@ public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final PostJdbcRepository postJdbcRepository;
 
+	@Override
 	// 로컬 파일 경로로부터 엑셀 파일을 읽어 Post 엔터티로 변환하고 저장
 	public void saveEstatesByExcel(SavePostsByExcelRequest request) {
 		try {
@@ -37,7 +38,7 @@ public class PostServiceImpl implements PostService {
 					String title = row.get("title");
 					String content = row.get("content");
 					String name = row.get("name");
-					return new Post(title, content, name);
+					return new Post(title, content, name, 0);
 				})
 				.toList();
 			postJdbcRepository.saveAllPost(posts);
@@ -53,6 +54,22 @@ public class PostServiceImpl implements PostService {
 			postRepository.save(request.toEntity());
 		} catch (Exception e) {
 			log.error("Failed to save single post", e);
+			throw ApiException.from(INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Override
+	public PostDto findPostById(Long id) {
+		try {
+			Post findPost = postRepository.findById(id).orElseThrow();
+			findPost.increaseViews();
+			return PostDto.builder()
+				.title(findPost.getTitle())
+				.content(findPost.getContent())
+				.name(findPost.getName())
+				.build();
+		} catch (Exception e) {
+			log.error("Failed to find post by id", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
 		}
 	}
