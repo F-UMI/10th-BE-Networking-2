@@ -81,4 +81,14 @@ public class PostServiceImpl implements PostService {
 		Page<Post> posts = postRepository.findAll(pageable);
 		return posts.map(PostDto::from);
 	}
+
+	@Override
+	public void deletePostById(Long id) {
+		try {
+			postRepository.deleteById(id);
+		}catch (Exception e) {
+			log.error("Failed to delete post by id", e);
+			throw ApiException.from(INTERNAL_SERVER_ERROR);
+		}
+	}
 }

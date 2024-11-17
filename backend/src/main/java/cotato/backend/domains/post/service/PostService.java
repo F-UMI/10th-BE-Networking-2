@@ -15,4 +15,6 @@ public interface PostService {
 	PostDto findPostById(Long id);
 
 	Page<PostDto> findPostsSortedByLikes(Pageable pageable);
+
+	void deletePostById(Long id);
 }
