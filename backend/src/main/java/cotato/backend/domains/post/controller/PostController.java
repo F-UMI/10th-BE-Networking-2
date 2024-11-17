@@ -29,13 +29,13 @@ public class PostController {
 	}
 
 	@PostMapping("/single")
-	public ResponseEntity<DataResponse<Void>> saveSinglePosts(@RequestBody SaveSinglePostRequest request) {
+	public ResponseEntity<DataResponse<Void>> saveSinglePost(@RequestBody SaveSinglePostRequest request) {
 		postService.saveSinglePost(request);
 		return ResponseEntity.ok(DataResponse.ok());
 	}
 
 	@GetMapping("/read")
-	public ResponseEntity<DataResponse<PostDto>> readPostById(@RequestParam Long id) {
+	public ResponseEntity<DataResponse<PostDto>> getPostById(@RequestParam Long id) {
 		return ResponseEntity.ok(DataResponse.from(postService.findPostById(id)));
 	}
 }
