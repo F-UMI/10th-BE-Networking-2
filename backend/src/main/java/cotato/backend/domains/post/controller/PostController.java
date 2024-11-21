@@ -6,10 +6,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cotato.backend.common.dto.DataResponse;
@@ -33,27 +33,26 @@ public class PostController {
 		return ResponseEntity.ok(DataResponse.ok());
 	}
 
-	@PostMapping("/single")
-	public ResponseEntity<DataResponse<Void>> saveSinglePost(@RequestBody SaveSinglePostRequest request) {
+	@PostMapping
+	public ResponseEntity<DataResponse<Void>> savePost(@RequestBody SaveSinglePostRequest request) {
 		postService.saveSinglePost(request);
 		return ResponseEntity.ok(DataResponse.ok());
 	}
 
-	@GetMapping("/read")
-	public ResponseEntity<DataResponse<PostDto>> getPostById(@RequestParam Long id) {
+	@GetMapping("/{id}")
+	public ResponseEntity<DataResponse<PostDto>> getPost(@PathVariable Long id) {
 		return ResponseEntity.ok(DataResponse.from(postService.findPostById(id)));
 	}
 
-	@GetMapping("/popular")
+	@GetMapping
 	public ResponseEntity<PageResponse<PostDto>> getPopularPosts(
 		@PageableDefault(sort = "likes", direction = Sort.Direction.DESC) Pageable pageable) {
 		return ResponseEntity.ok(PageResponse.from(postService.findPostsSortedByLikes(pageable)));
 	}
 
-	@DeleteMapping("/delete")
-	public ResponseEntity<DataResponse<Void>> deletePostById(@RequestParam Long id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<DataResponse<Void>> deletePost(@PathVariable Long id) {
 		postService.deletePostById(id);
 		return ResponseEntity.ok(DataResponse.ok());
 	}
-
 }
