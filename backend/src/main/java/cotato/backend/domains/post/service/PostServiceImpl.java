@@ -84,10 +84,10 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public void deletePostById(Long id) {
-		try {
+		if (postRepository.existsById(id)) {
 			postRepository.deleteById(id);
-		}catch (Exception e) {
-			log.error("Failed to delete post by id", e);
+		} else {
+			log.error("Failed to delete post by id: {}", id);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
 		}
 	}
