@@ -29,6 +29,8 @@ public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepository;
 	private final PostJdbcRepository postJdbcRepository;
+	private final static int VIEWS_INIT_VALUE = 0;
+	private final static int LIKES_INIT_VALUE = 0;
 
 	@Override
 	// 로컬 파일 경로로부터 엑셀 파일을 읽어 Post 엔터티로 변환하고 저장
@@ -40,7 +42,7 @@ public class PostServiceImpl implements PostService {
 					String title = row.get("title");
 					String content = row.get("content");
 					String name = row.get("name");
-					return new Post(title, content, name, 0, 0);
+					return new Post(title, content, name, VIEWS_INIT_VALUE, LIKES_INIT_VALUE);
 				})
 				.toList();
 			postJdbcRepository.saveAllPost(posts);
@@ -65,11 +67,7 @@ public class PostServiceImpl implements PostService {
 		try {
 			Post findPost = postRepository.findById(id).orElseThrow();
 			findPost.increaseViews();
-			return PostDto.builder()
-				.title(findPost.getTitle())
-				.content(findPost.getContent())
-				.name(findPost.getName())
-				.build();
+			return PostDto.from(findPost);
 		} catch (Exception e) {
 			log.error("Failed to find post by id", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
@@ -78,8 +76,13 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public Page<PostDto> findPostsSortedByLikes(Pageable pageable) {
-		Page<Post> posts = postRepository.findAll(pageable);
-		return posts.map(PostDto::from);
+		try {
+			Page<Post> posts = postRepository.findAll(pageable);
+			return posts.map(PostDto::from);
+		} catch (Exception e) {
+			log.error("Failed to find posts by likes", e);
+			throw ApiException.from(INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Override
