@@ -50,7 +50,9 @@ public class PostServiceImpl implements PostService {
 				})
 				.toList();
 			postJdbcRepository.saveAllPost(posts);
+			log.info("엑셀 파일로부터 {}개의 게시글 저장 완료", posts.size());
 		} catch (Exception e) {
+			log.error("엑셀 파일 처리 중 오류 발생: {}", e.getMessage());
 			throw ApiException.from(POST_SAVE_FAILED);
 		}
 	}
@@ -59,8 +61,9 @@ public class PostServiceImpl implements PostService {
 	public void saveSinglePost(SaveSinglePostRequest request) {
 		try {
 			postRepository.save(request.toEntity());
+			log.info("게시글 저장 완료: {}", request.title());
 		} catch (Exception e) {
-			log.error("Failed to save single post", e);
+			log.error("게시글 저장 중 오류 발생: {}", e.getMessage());
 			throw ApiException.from(POST_SAVE_FAILED);
 		}
 	}
@@ -75,6 +78,7 @@ public class PostServiceImpl implements PostService {
 			postRepository.saveAndFlush(post);
 			return PostResponse.from(post);
 		} catch (OptimisticLockingFailureException e) {
+			log.warn("게시글 동시성 문제 발생 - ID: {}", id);
 			throw ApiException.from(CONCURRENCY_PROBLEM);
 		}
 	}
@@ -83,8 +87,10 @@ public class PostServiceImpl implements PostService {
 	public Page<PostResponse> findPostsSortedByLikes(Pageable pageable) {
 		try {
 			Page<Post> posts = postRepository.findAll(pageable);
+			log.info("게시글 목록 조회 완료 - 총 게시글 수: {}", posts.getTotalElements());
 			return posts.map(PostResponse::from);
 		} catch (Exception e) {
+			log.error("게시글 목록 조회 중 오류 발생: {}", e.getMessage());
 			throw ApiException.from(POST_NOT_FOUND);
 		}
 	}
@@ -93,10 +99,12 @@ public class PostServiceImpl implements PostService {
 	public void deletePostById(Long id) {
 		validatePostById(id);
 		postRepository.deleteById(id);
+		log.info("게시글 삭제 완료 - ID: {}", id);
 	}
 
 	private void validatePostById(Long id) {
 		if (!postRepository.existsById(id)) {
+			log.warn("존재하지 않는 게시글 - ID: {}", id);
 			throw ApiException.from(POST_NOT_FOUND);
 		}
 	}
