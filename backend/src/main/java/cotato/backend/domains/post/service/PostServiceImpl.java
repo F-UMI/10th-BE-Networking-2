@@ -19,7 +19,6 @@ import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
 import cotato.backend.domains.post.repository.PostJdbcRepository;
 import cotato.backend.domains.post.repository.PostRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +51,7 @@ public class PostServiceImpl implements PostService {
 				.toList();
 			postJdbcRepository.saveAllPost(posts);
 		} catch (Exception e) {
-			log.error("Failed to save estates by excel", e);
-			throw ApiException.from(INTERNAL_SERVER_ERROR);
+			throw ApiException.from(POST_SAVE_FAILED);
 		}
 	}
 
@@ -63,25 +61,21 @@ public class PostServiceImpl implements PostService {
 			postRepository.save(request.toEntity());
 		} catch (Exception e) {
 			log.error("Failed to save single post", e);
-			throw ApiException.from(INTERNAL_SERVER_ERROR);
+			throw ApiException.from(POST_SAVE_FAILED);
 		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
-	public PostResponse findPostById(Long id) throws Exception {
+	public PostResponse findPostById(Long id) {
 		try {
 			Post post = postRepository.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+				.orElseThrow(() -> ApiException.from(POST_NOT_FOUND));
 			postNamedService.increase(post, String.valueOf(post.getId()));
 			postRepository.saveAndFlush(post);
 			return PostResponse.from(post);
-
 		} catch (OptimisticLockingFailureException e) {
-			throw new Exception("동시성 문제가 발생했습니다. 다시 시도해주세요.");
-		} catch (Exception e) {
-			log.error("Failed to find post by id", e);
-			throw ApiException.from(INTERNAL_SERVER_ERROR);
+			throw ApiException.from(CONCURRENCY_PROBLEM);
 		}
 	}
 
@@ -91,18 +85,19 @@ public class PostServiceImpl implements PostService {
 			Page<Post> posts = postRepository.findAll(pageable);
 			return posts.map(PostResponse::from);
 		} catch (Exception e) {
-			log.error("Failed to find posts by likes", e);
-			throw ApiException.from(INTERNAL_SERVER_ERROR);
+			throw ApiException.from(POST_NOT_FOUND);
 		}
 	}
 
 	@Override
 	public void deletePostById(Long id) {
-		if (postRepository.existsById(id)) {
-			postRepository.deleteById(id);
-		} else {
-			log.error("Failed to delete post by id: {}", id);
-			throw ApiException.from(INTERNAL_SERVER_ERROR);
+		validatePostById(id);
+		postRepository.deleteById(id);
+	}
+
+	private void validatePostById(Long id) {
+		if (!postRepository.existsById(id)) {
+			throw ApiException.from(POST_NOT_FOUND);
 		}
 	}
 }
