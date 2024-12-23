@@ -12,7 +12,7 @@ public interface PostService {
 
 	void saveSinglePost(SaveSinglePostRequest request);
 
-	PostDto findPostById(Long id);
+	PostDto findPostById(Long id) throws Exception;
 
 	Page<PostDto> findPostsSortedByLikes(Pageable pageable);
 

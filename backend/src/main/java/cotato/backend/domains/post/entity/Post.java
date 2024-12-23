@@ -2,10 +2,12 @@ package cotato.backend.domains.post.entity;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,10 @@ public class Post {
 
 	@ColumnDefault("0")
 	private int likes;
+
+	@Version
+	@Column(name = "version", columnDefinition = "bigint default 0")
+	private Long version = 0L;
 
 	@Builder
 	public Post(@NonNull String title, @NonNull String content, @NonNull String name, int views, int likes) {

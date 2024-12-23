@@ -4,9 +4,11 @@ import static cotato.backend.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cotato.backend.common.excel.ExcelUtils;
@@ -17,18 +19,21 @@ import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
 import cotato.backend.domains.post.repository.PostJdbcRepository;
 import cotato.backend.domains.post.repository.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepository;
 	private final PostJdbcRepository postJdbcRepository;
+	private final PostNamedService postNamedService;
+
 	private final static int VIEWS_INIT_VALUE = 0;
 	private final static int LIKES_INIT_VALUE = 0;
 
@@ -62,12 +67,18 @@ public class PostServiceImpl implements PostService {
 		}
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
-	public PostDto findPostById(Long id) {
+	public PostDto findPostById(Long id) throws Exception {
 		try {
-			Post findPost = postRepository.findById(id).orElseThrow();
-			findPost.increaseViews();
-			return PostDto.from(findPost);
+			Post post = postRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+			postNamedService.increase(post, String.valueOf(post.getId()));
+			postRepository.saveAndFlush(post);
+			return PostDto.from(post);
+
+		} catch (OptimisticLockingFailureException e) {
+			throw new Exception("동시성 문제가 발생했습니다. 다시 시도해주세요.");
 		} catch (Exception e) {
 			log.error("Failed to find post by id", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);
