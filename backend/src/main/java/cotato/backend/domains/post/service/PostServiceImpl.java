@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cotato.backend.common.excel.ExcelUtils;
 import cotato.backend.common.exception.ApiException;
-import cotato.backend.domains.post.dto.PostDto;
+import cotato.backend.domains.post.dto.PostResponse;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
@@ -69,13 +69,13 @@ public class PostServiceImpl implements PostService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
-	public PostDto findPostById(Long id) throws Exception {
+	public PostResponse findPostById(Long id) throws Exception {
 		try {
 			Post post = postRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 			postNamedService.increase(post, String.valueOf(post.getId()));
 			postRepository.saveAndFlush(post);
-			return PostDto.from(post);
+			return PostResponse.from(post);
 
 		} catch (OptimisticLockingFailureException e) {
 			throw new Exception("동시성 문제가 발생했습니다. 다시 시도해주세요.");
@@ -86,10 +86,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Page<PostDto> findPostsSortedByLikes(Pageable pageable) {
+	public Page<PostResponse> findPostsSortedByLikes(Pageable pageable) {
 		try {
 			Page<Post> posts = postRepository.findAll(pageable);
-			return posts.map(PostDto::from);
+			return posts.map(PostResponse::from);
 		} catch (Exception e) {
 			log.error("Failed to find posts by likes", e);
 			throw ApiException.from(INTERNAL_SERVER_ERROR);

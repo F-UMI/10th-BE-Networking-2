@@ -3,7 +3,7 @@ package cotato.backend.domains.post.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import cotato.backend.domains.post.dto.PostDto;
+import cotato.backend.domains.post.dto.PostResponse;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 
@@ -12,9 +12,9 @@ public interface PostService {
 
 	void saveSinglePost(SaveSinglePostRequest request);
 
-	PostDto findPostById(Long id) throws Exception;
+	PostResponse findPostById(Long id) throws Exception;
 
-	Page<PostDto> findPostsSortedByLikes(Pageable pageable);
+	Page<PostResponse> findPostsSortedByLikes(Pageable pageable);
 
 	void deletePostById(Long id);
 }

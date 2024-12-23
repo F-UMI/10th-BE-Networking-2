@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cotato.backend.common.dto.DataResponse;
 import cotato.backend.common.dto.PageResponse;
-import cotato.backend.domains.post.dto.PostDto;
+import cotato.backend.domains.post.dto.PostResponse;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.service.PostServiceImpl;
@@ -40,12 +40,12 @@ public class PostController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<DataResponse<PostDto>> getPost(@PathVariable Long id) throws Exception {
+	public ResponseEntity<DataResponse<PostResponse>> getPost(@PathVariable Long id) throws Exception {
 		return ResponseEntity.ok(DataResponse.from(postService.findPostById(id)));
 	}
 
 	@GetMapping
-	public ResponseEntity<PageResponse<PostDto>> getPopularPosts(
+	public ResponseEntity<PageResponse<PostResponse>> getPopularPosts(
 		@PageableDefault(sort = "likes", direction = Sort.Direction.DESC) Pageable pageable) {
 		return ResponseEntity.ok(PageResponse.from(postService.findPostsSortedByLikes(pageable)));
 	}
