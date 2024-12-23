@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cotato.backend.common.dto.DataResponse;
 import cotato.backend.common.dto.PageResponse;
-import cotato.backend.domains.post.dto.PostResponse;
+import cotato.backend.domains.post.dto.response.PostResponse;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.service.PostServiceImpl;

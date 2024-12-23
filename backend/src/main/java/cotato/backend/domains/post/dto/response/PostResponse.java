@@ -1,4 +1,4 @@
-package cotato.backend.domains.post.dto;
+package cotato.backend.domains.post.dto.response;
 
 import cotato.backend.domains.post.entity.Post;
 import lombok.Builder;

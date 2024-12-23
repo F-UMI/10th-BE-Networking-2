@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cotato.backend.common.excel.ExcelUtils;
 import cotato.backend.common.exception.ApiException;
-import cotato.backend.domains.post.dto.PostResponse;
+import cotato.backend.domains.post.dto.response.PostResponse;
 import cotato.backend.domains.post.dto.request.SavePostsByExcelRequest;
 import cotato.backend.domains.post.dto.request.SaveSinglePostRequest;
 import cotato.backend.domains.post.entity.Post;
