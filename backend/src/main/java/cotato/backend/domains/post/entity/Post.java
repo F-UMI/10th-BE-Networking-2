@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,6 +19,11 @@ import lombok.NonNull;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "post",
+	indexes = {
+		@Index(name = "idx_post_views", columnList = "views")
+	}
+)
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
