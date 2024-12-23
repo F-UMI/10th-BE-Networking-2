@@ -49,7 +49,7 @@ public class Post {
 	private Long version = 0L;
 
 	@Builder
-	public Post(@NonNull String title, @NonNull String content, @NonNull String name, int views, int likes) {
+	public Post(String title, String content, String name, int views, int likes) {
 		this.title = title;
 		this.content = content;
 		this.name = name;
