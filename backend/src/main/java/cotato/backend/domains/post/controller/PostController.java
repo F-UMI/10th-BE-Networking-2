@@ -40,7 +40,7 @@ public class PostController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<DataResponse<PostResponse>> getPost(@PathVariable Long id) throws Exception {
+	public ResponseEntity<DataResponse<PostResponse>> getPost(@PathVariable Long id) {
 		return ResponseEntity.ok(DataResponse.from(postService.findPostById(id)));
 	}
 
