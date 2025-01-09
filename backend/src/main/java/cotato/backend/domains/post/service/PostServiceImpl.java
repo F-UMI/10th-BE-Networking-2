@@ -4,6 +4,8 @@ import static cotato.backend.common.exception.ErrorCode.*;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -84,6 +86,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Cacheable(value = "posts", key = "#pageable.pageNumber + '_' + #pageable.pageSize + '_' + #pageable.sort")
 	public Page<PostResponse> findPostsSortedByLikes(Pageable pageable) {
 		try {
 			Page<Post> posts = postRepository.findAll(pageable);
@@ -98,6 +101,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePostById(Long id) {
 		validatePostById(id);
+		clearPostCache();
 		postRepository.deleteById(id);
 		log.info("게시글 삭제 완료 - ID: {}", id);
 	}
@@ -107,5 +111,11 @@ public class PostServiceImpl implements PostService {
 			log.warn("존재하지 않는 게시글 - ID: {}", id);
 			throw ApiException.from(POST_NOT_FOUND);
 		}
+	}
+
+
+	@CacheEvict(value = "posts", allEntries = true)
+	public void clearPostCache() {
+		log.info("게시글 캐시 초기화");
 	}
 }
